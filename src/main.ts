@@ -13,7 +13,7 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   app.use(cors());
   app.use(morgan('dev'));
-  app.use(bodyParser.json());
+  app.use(bodyParser.json({limit: "50mb"}));
   app.use(bodyParser.urlencoded({ extended: false }));
   app.use(helmet());
   app.useGlobalFilters(new ExceptionHandlerFilter)

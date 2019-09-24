@@ -8,24 +8,24 @@ export class BooksController {
     constructor(private readonly booksService: BooksService) { }
     @UseGuards(AuthGuard('jwt'))
     @Get()
-    findAll(): any {
-        return this.booksService.findAll();
+    findAll(@Req() req: Request, @Res() res: Response): any {
+        return this.booksService.findAll(res);
     }
 
     @UseGuards(AuthGuard('jwt'))
-    @Get('/takeEditBook/:id')
+    @Get('/:id')
     findOne(@Req() req: Request, @Res() res: Response): any {
         return this.booksService.findOne(req, res);
     }
 
     @UseGuards(AuthGuard('jwt'))
     @Put('/:id')
-    updatBook(@Req() req: Request, @Res() res: Response): any {
-        return this.booksService.updatBook(req, res);
+    updateBook(@Req() req: Request, @Res() res: Response): any {
+        return this.booksService.updateBook(req, res);
     }
 
     @UseGuards(AuthGuard('jwt'))
-    @Delete('/deleteBooks')
+    @Delete('/:id')
     deleteBook(@Req() req: Request, @Res() res: Response): any {
         return this.booksService.deleteBook(req, res);
     }

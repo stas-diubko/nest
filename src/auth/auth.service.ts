@@ -55,12 +55,20 @@ export class AuthService{
       });
     }))
 
+    
+    let isAdmin = false;
+
+    if(permissions[0] == 'admin') {
+      isAdmin = true
+    }
+
     const userLogin = {
       id: user.id,
-      name: user.firstname,
+      name: user.name,
       email: user.email,
-      isAdmin: permissions[0]
+      isAdmin: isAdmin
     };
+
     const token = await jwtr.sign(userLogin, 'secret')
      return res.status(200).send({
       success: true,

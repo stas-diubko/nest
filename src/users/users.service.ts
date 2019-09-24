@@ -4,7 +4,9 @@ import * as bcrypt from "bcrypt"
 import * as jwt from "jwt-then";
 import { IsEmail } from 'sequelize-typescript';
 import { walidRegister } from '../help/register.valid'
-import { getRole } from '../help/actions';
+import { getToken } from '../help/actions';
+import * as jwtr from "jwt-then";
+// import  jwt_decode from 'jwt-decode';
 
 
 @Injectable()
@@ -39,10 +41,10 @@ export class UsersService {
     }
   }
   async findOne(req, res): Promise<users[]> {
-    let role = await getRole(req.headers.authorization);
+    let role = await getToken(req.headers.authorization);
     try {
       if(role.isAdmin === 'admin'){
-        const user = await this.USERS_REPOSITORY.findOne<users>({ attributes: ['id', 'firstname', 'secondname', 'email'], where: { id: req.params.id } });
+        const user = await this.USERS_REPOSITORY.findOne<users>({ attributes: ['id', 'name', 'email'], where: { id: req.params.id } });
         if (user) {
           return res.status(200).send({
             success: true,
@@ -64,14 +66,47 @@ export class UsersService {
     }
   }
 
-  async changeAvatar(req, res): Promise<users[]> {
+  async changeUserData(req, res): Promise<users[]> {
     try {
       const users: any = await this.USERS_REPOSITORY.findOne<users>({ where: { id: req.params.id } });
       if (users) {
+        
       await this.USERS_REPOSITORY.update<users>(req.body, { where: { id: req.params.id } });
+      
+      const user = await this.USERS_REPOSITORY.findOne<users>({where: { id: req.params.id } });
+
+      let permissions: any[] = [];
+      await this.USERS_REPOSITORY.findAll<users>({
+        where: { id: user.id },
+        include: [{
+          model: roles,
+        }]
+  
+      }).then((rolen: any) => rolen.forEach(el => {
+        el.roleId.forEach(element => {
+          permissions.push(element.dataValues.roleName);
+        });
+      }))
+  
+      
+      let isAdmin = false;
+  
+      if(permissions[0] == 'admin') {
+        isAdmin = true
+      }
+  
+      const userChanged = {
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        isAdmin: isAdmin,
+      };
+  
+      const token = await jwtr.sign(userChanged, 'secret')
+
         return res.status(200).send({
           success: true,
-          data: req.body.imageProfile
+          data: token
         });
       } else {
         return res.status(404).send({
@@ -92,8 +127,8 @@ export class UsersService {
 
   async getAvatar(req, res): Promise<any> {
     try {
-      const users: any = await this.USERS_REPOSITORY.findOne<users>({ attributes: ['imageProfile'], where: { id: req.params.id } });
-      const avatar = users.dataValues.imageProfile
+      const users: any = await this.USERS_REPOSITORY.findOne<users>({ attributes: ['image'], where: { id: req.params.id } });
+      const avatar = users.dataValues.image
         res.status(200).send({
           success: true,
           data: avatar
@@ -107,9 +142,10 @@ export class UsersService {
   }
 
   async delete(req, res): Promise<any> {
-    let role = await getRole(req.headers.authorization);
+    let token = await getToken(req.headers.authorization);
+    
     try {
-      if(role.isAdmin === 'admin'){
+      if(token.isAdmin){
         const check = await this.USERS_REPOSITORY.findOne<users>({ where: { id: req.params.id } });
         if (check) {
           await this.USER_ROLES_REPO.destroy({ where: { users_id: req.params.id } });
@@ -135,32 +171,32 @@ export class UsersService {
     }
   }
 
-  async update(req, res): Promise<any> {
-    try {
-      const check = await this.USERS_REPOSITORY.findOne<users>({ where: { id: req.params.id } });
+  // async update(req, res): Promise<any> {
+  //   try {
+  //     const check = await this.USERS_REPOSITORY.findOne<users>({ where: { id: req.params.id } });
 
-      if (check) {
+  //     if (check) {
 
-        await this.USERS_REPOSITORY.update<users>(req.body, { where: { id: req.params.id } });
-        return res.status(200).send({
-          success: true,
-          message: 'Update is done'
-        });
-      } else {
-        return res.status(404).send({
-          success: false,
-          message: 'User not found',
-          data: null
-        });
+  //       await this.USERS_REPOSITORY.update<users>(req.body, { where: { id: req.params.id } });
+  //       return res.status(200).send({
+  //         success: true,
+  //         message: 'Update is done'
+  //       });
+  //     } else {
+  //       return res.status(404).send({
+  //         success: false,
+  //         message: 'User not found',
+  //         data: null
+  //       });
 
-      }
-    } catch (err) {
-      res.status(500).send({
-        success: false,
-        message: err
-      });
-    }
-  }
+  //     }
+  //   } catch (err) {
+  //     res.status(500).send({
+  //       success: false,
+  //       message: err
+  //     });
+  //   }
+  // }
 
   async register(req, res): Promise<any> {
      

@@ -23,8 +23,8 @@ export class UsersController {
 
     @UseGuards(AuthGuard('jwt'))
     @Put('/avatar/:id')
-    changeAvatar(@Req() req: Request, @Res() res: Response) {
-        return this.usersService.changeAvatar(req, res);
+    changeUserData(@Req() req: Request, @Res() res: Response) {
+        return this.usersService.changeUserData(req, res);
     }
 
     @UseGuards(AuthGuard('jwt'))
@@ -39,11 +39,11 @@ export class UsersController {
         return this.usersService.delete(req, res);
     }
 
-    @UseGuards(AuthGuard('jwt'))
-    @Put('/:id')
-    update(@Req() req: Request, @Res() res: Response): any {
-        return this.usersService.update(req, res);
-    }
+    // @UseGuards(AuthGuard('jwt'))
+    // @Put('/:id')
+    // update(@Req() req: Request, @Res() res: Response): any {
+    //     return this.usersService.update(req, res);
+    // }
 
     @Post('/register')
     register(@Req() req: Request, @Res() res: Response): any {
