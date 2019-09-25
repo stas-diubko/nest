@@ -3,7 +3,6 @@ import { books } from './books.entity';
 import { Response } from 'express';
 import { getToken } from '../help/actions';
 
-
 @Injectable()
 export class BooksService {
   constructor(
@@ -23,7 +22,6 @@ export class BooksService {
         message: error
       });
     }
-    
   }
 
   async findOne(req, res): Promise<books> {
@@ -62,7 +60,6 @@ export class BooksService {
       });
     }
     
-
   }
 
   async deleteBook(req, res): Promise<any> {
@@ -71,11 +68,9 @@ export class BooksService {
     try{
       if(token.isAdmin){
         await this.BOOKS_REPOSITORY.destroy({ where: { _id: req.params.id } })
-       
           return res.status(200).send({
             success: true
           });
-        
       }
       else return res.status(404).send({
           success: false,
@@ -93,11 +88,11 @@ export class BooksService {
     try{
       const book = req.body;
 
-            await this.BOOKS_REPOSITORY.create<books>(book)
-            return res.status(200).send({
-              success: true,
-              message: 'Add is done!'
-            });
+      await this.BOOKS_REPOSITORY.create<books>(book)
+      return res.status(200).send({
+        success: true,
+        message: 'Add is done!'
+      });
     }
      catch (error) {
        res.status(404).send({
@@ -105,8 +100,5 @@ export class BooksService {
           message: error
         });
      }
-     
-         
-      
   }
 }

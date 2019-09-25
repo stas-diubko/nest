@@ -6,13 +6,12 @@ import { AuthGuard } from '@nestjs/passport';
 @Controller('books')
 export class BooksController {
     constructor(private readonly booksService: BooksService) { }
-    @UseGuards(AuthGuard('jwt'))
+    
     @Get()
     findAll(@Req() req: Request, @Res() res: Response): any {
         return this.booksService.findAll(res);
     }
 
-    @UseGuards(AuthGuard('jwt'))
     @Get('/:id')
     findOne(@Req() req: Request, @Res() res: Response): any {
         return this.booksService.findOne(req, res);

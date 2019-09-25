@@ -53,7 +53,6 @@ export class roles extends Model<roles> {
   @Column
   roleName: string
 
-
   @BelongsToMany(() => users, () => users_roles)
   datarole: users[];
 }

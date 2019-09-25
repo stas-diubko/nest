@@ -22,7 +22,6 @@ export class AuthService{
 
   async validateUser(email: string, password: string): Promise<any> {
     
-    
     let loginValid = await validLogin(email, password)
     
     if(loginValid.stateValid !== 2 ){
@@ -30,7 +29,6 @@ export class AuthService{
     }
     
     const user: any = await this.AUTH_REPOSITORY.findOne<users>({ where: { email: email } })
-    // console.log(user);
     if (!user) {
       throw new HttpException('User not found', 404);
     }
@@ -42,6 +40,7 @@ export class AuthService{
   }
      
   async login(user, res){   
+        
     let permissions: any[] = [];
     await this.AUTH_REPOSITORY.findAll<users>({
       where: { id: user.id },
@@ -54,7 +53,6 @@ export class AuthService{
         permissions.push(element.dataValues.roleName);
       });
     }))
-
     
     let isAdmin = false;
 

@@ -1,7 +1,6 @@
 
 export const validLogin = (email, password) =>{
  
-  
       const errorObj = {
         logErrorEmail: '',
         logErrorPassword: ''

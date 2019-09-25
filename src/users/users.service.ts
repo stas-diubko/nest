@@ -6,8 +6,6 @@ import { IsEmail } from 'sequelize-typescript';
 import { walidRegister } from '../help/register.valid'
 import { getToken } from '../help/actions';
 import * as jwtr from "jwt-then";
-// import  jwt_decode from 'jwt-decode';
-
 
 @Injectable()
 export class UsersService {
@@ -18,13 +16,20 @@ export class UsersService {
 
   ) { }
 
-  async findAll(res): Promise<users[]> {
+  async findAll(req, res): Promise<users[]> {
+    
     try {
-      const users: any = await this.USERS_REPOSITORY.findAll<users>();
+      const allUsers: any = await this.USERS_REPOSITORY.findAll<users>();
+     
+      let offset = req.body.page * req.body.pageSize
+      
+      const users: any = await this.USERS_REPOSITORY.findAll<users>({limit: 2, offset:offset});
+             
       if (users.length !== 0) {
         return res.status(200).send({
           success: true,
-          data: users
+          data: users,
+          usersLength: allUsers.length
         });
       } else {
         return res.status(404).send({
@@ -33,10 +38,10 @@ export class UsersService {
           data: null
         });
       }
-    } catch (err) {
+    } catch (error) {
       res.status(500).send({
         success: false,
-        message: err
+        message: error
       });
     }
   }
@@ -87,8 +92,7 @@ export class UsersService {
           permissions.push(element.dataValues.roleName);
         });
       }))
-  
-      
+        
       let isAdmin = false;
   
       if(permissions[0] == 'admin') {
@@ -123,7 +127,6 @@ export class UsersService {
       });
     }
   }
-
 
   async getAvatar(req, res): Promise<any> {
     try {
@@ -170,33 +173,6 @@ export class UsersService {
       });
     }
   }
-
-  // async update(req, res): Promise<any> {
-  //   try {
-  //     const check = await this.USERS_REPOSITORY.findOne<users>({ where: { id: req.params.id } });
-
-  //     if (check) {
-
-  //       await this.USERS_REPOSITORY.update<users>(req.body, { where: { id: req.params.id } });
-  //       return res.status(200).send({
-  //         success: true,
-  //         message: 'Update is done'
-  //       });
-  //     } else {
-  //       return res.status(404).send({
-  //         success: false,
-  //         message: 'User not found',
-  //         data: null
-  //       });
-
-  //     }
-  //   } catch (err) {
-  //     res.status(500).send({
-  //       success: false,
-  //       message: err
-  //     });
-  //   }
-  // }
 
   async register(req, res): Promise<any> {
      

@@ -9,7 +9,6 @@ import { ExceptionHandlerFilter } from './exception';
 
 async function bootstrap() {
 
-
   const app = await NestFactory.create(AppModule);
   app.use(cors());
   app.use(morgan('dev'));
