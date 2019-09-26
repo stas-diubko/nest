@@ -1,6 +1,6 @@
 import { Injectable, Inject, UnauthorizedException } from '@nestjs/common';
 import * as bcrypt from "bcrypt"
-import { users, roles } from '../users/users.entity';
+import { Users, Roles } from '../users/users.entity';
 import { JwtService } from '@nestjs/jwt';
 import { HttpException } from "@nestjs/common"
 import { ConfigService } from '../config/config.service';
@@ -14,7 +14,7 @@ import { validLogin } from '../help//login.valid';
 export class AuthService{
   private test: any;
   public jwtService: JwtService;
-  @Inject('AUTH_REPOSITORY') private readonly AUTH_REPOSITORY: typeof users
+  @Inject('AUTH_REPOSITORY') private readonly AUTH_REPOSITORY: typeof Users
 
   constructor(config: ConfigService) {
     this.test = config.get('APP');
@@ -28,7 +28,7 @@ export class AuthService{
       throw new HttpException(loginValid.errorObj, 404);
     }
     
-    const user: any = await this.AUTH_REPOSITORY.findOne<users>({ where: { email: email } })
+    const user: any = await this.AUTH_REPOSITORY.findOne<Users>({ where: { email: email } })
     if (!user) {
       throw new HttpException('User not found', 404);
     }
@@ -42,10 +42,10 @@ export class AuthService{
   async login(user, res){   
         
     let permissions: any[] = [];
-    await this.AUTH_REPOSITORY.findAll<users>({
+    await this.AUTH_REPOSITORY.findAll<Users>({
       where: { id: user.id },
       include: [{
-        model: roles,
+        model: Roles,
       }]
 
     }).then((rolen: any) => rolen.forEach(el => {

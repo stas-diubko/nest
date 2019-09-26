@@ -1,5 +1,5 @@
 import { Injectable, Inject } from '@nestjs/common';
-import { users, users_roles, roles } from './users.entity';
+import { Users, Users_roles, Roles } from './users.entity';
 import * as bcrypt from "bcrypt"
 import * as jwt from "jwt-then";
 import { IsEmail } from 'sequelize-typescript';
@@ -11,19 +11,19 @@ import * as jwtr from "jwt-then";
 export class UsersService {
   constructor(
 
-    @Inject('USERS_REPOSITORY') private readonly USERS_REPOSITORY: typeof users,
-    @Inject('USER_ROLES_REPO') private readonly USER_ROLES_REPO: typeof users_roles
+    @Inject('USERS_REPOSITORY') private readonly USERS_REPOSITORY: typeof Users,
+    @Inject('USER_ROLES_REPO') private readonly USER_ROLES_REPO: typeof Users_roles
 
   ) { }
 
-  async findAll(req, res): Promise<users[]> {
+  async findAll(req, res): Promise<Users[]> {
     
     try {
-      const allUsers: any = await this.USERS_REPOSITORY.findAll<users>();
+      const allUsers: any = await this.USERS_REPOSITORY.findAll<Users>();
      
       let offset = req.body.page * req.body.pageSize
       
-      const users: any = await this.USERS_REPOSITORY.findAll<users>({limit: 2, offset:offset});
+      const users: any = await this.USERS_REPOSITORY.findAll<Users>({limit: req.body.pageSize, offset:offset});
              
       if (users.length !== 0) {
         return res.status(200).send({
@@ -45,11 +45,11 @@ export class UsersService {
       });
     }
   }
-  async findOne(req, res): Promise<users[]> {
+  async findOne(req, res): Promise<Users[]> {
     let role = await getToken(req.headers.authorization);
     try {
       if(role.isAdmin === 'admin'){
-        const user = await this.USERS_REPOSITORY.findOne<users>({ attributes: ['id', 'name', 'email'], where: { id: req.params.id } });
+        const user = await this.USERS_REPOSITORY.findOne<Users>({ attributes: ['id', 'name', 'email'], where: { id: req.params.id } });
         if (user) {
           return res.status(200).send({
             success: true,
@@ -71,20 +71,20 @@ export class UsersService {
     }
   }
 
-  async changeUserData(req, res): Promise<users[]> {
+  async changeUserData(req, res): Promise<Users[]> {
     try {
-      const users: any = await this.USERS_REPOSITORY.findOne<users>({ where: { id: req.params.id } });
+      const users: any = await this.USERS_REPOSITORY.findOne<Users>({ where: { id: req.params.id } });
       if (users) {
         
-      await this.USERS_REPOSITORY.update<users>(req.body, { where: { id: req.params.id } });
+      await this.USERS_REPOSITORY.update<Users>(req.body, { where: { id: req.params.id } });
       
-      const user = await this.USERS_REPOSITORY.findOne<users>({where: { id: req.params.id } });
+      const user = await this.USERS_REPOSITORY.findOne<Users>({where: { id: req.params.id } });
 
       let permissions: any[] = [];
-      await this.USERS_REPOSITORY.findAll<users>({
+      await this.USERS_REPOSITORY.findAll<Users>({
         where: { id: user.id },
         include: [{
-          model: roles,
+          model: Roles,
         }]
   
       }).then((rolen: any) => rolen.forEach(el => {
@@ -130,7 +130,7 @@ export class UsersService {
 
   async getAvatar(req, res): Promise<any> {
     try {
-      const users: any = await this.USERS_REPOSITORY.findOne<users>({ attributes: ['image'], where: { id: req.params.id } });
+      const users: any = await this.USERS_REPOSITORY.findOne<Users>({ attributes: ['image'], where: { id: req.params.id } });
       const avatar = users.dataValues.image
         res.status(200).send({
           success: true,
@@ -149,7 +149,7 @@ export class UsersService {
     
     try {
       if(token.isAdmin){
-        const check = await this.USERS_REPOSITORY.findOne<users>({ where: { id: req.params.id } });
+        const check = await this.USERS_REPOSITORY.findOne<Users>({ where: { id: req.params.id } });
         if (check) {
           await this.USER_ROLES_REPO.destroy({ where: { users_id: req.params.id } });
           await this.USERS_REPOSITORY.destroy({ where: { id: req.params.id } });
@@ -189,15 +189,15 @@ export class UsersService {
 
           if (!matchUser) {
             
-            await this.USERS_REPOSITORY.create<users>(newUser);
+            await this.USERS_REPOSITORY.create<Users>(newUser);
             
-            const user: any = await this.USERS_REPOSITORY.findOne<users>({ attributes: ['id'], where: { email: newUser.email } });
+            const user: any = await this.USERS_REPOSITORY.findOne<Users>({ attributes: ['id'], where: { email: newUser.email } });
             const newId = user.dataValues.id
             const newRole = {
               users_id: newId,
               roles_id: 2
             }
-            await this.USER_ROLES_REPO.create<users_roles>(newRole);
+            await this.USER_ROLES_REPO.create<Users_roles>(newRole);
             res.status(200).send({
               success: true,
               message: "User Successfully created"

@@ -1,19 +1,19 @@
 import { Table, Column, Model, DataType, ForeignKey, BelongsToMany, BelongsTo } from 'sequelize-typescript';
 
 @Table
-export class users_roles extends Model<users_roles> {
+export class Users_roles extends Model<Users_roles> {
 
-  @ForeignKey(() => users)
+  @ForeignKey(() => Users)
   @Column
   users_id: number;
 
-  @ForeignKey(() => roles)
+  @ForeignKey(() => Roles)
   @Column
   roles_id: number;
 }
 
 @Table
-export class users extends Model<users> {
+export class Users extends Model<Users> {
   @Column({
     type: DataType.INTEGER,
     autoIncrement: true,
@@ -35,12 +35,12 @@ export class users extends Model<users> {
   @Column
   image: string;
 
-  @BelongsToMany(() => roles, () => users_roles)
-  roleId: users_roles[];
+  @BelongsToMany(() => Roles, () => Users_roles)
+  roleId: Users_roles[];
 }
 
 @Table
-export class roles extends Model<roles> {
+export class Roles extends Model<Roles> {
 
   @Column({
     type: DataType.INTEGER,
@@ -53,7 +53,7 @@ export class roles extends Model<roles> {
   @Column
   roleName: string
 
-  @BelongsToMany(() => users, () => users_roles)
-  datarole: users[];
+  @BelongsToMany(() => Users, () => Users_roles)
+  datarole: Users[];
 }
 

@@ -8,18 +8,88 @@ export class BooksService {
   constructor(
     @Inject('BOOKS_REPOSITORY') private readonly BOOKS_REPOSITORY: typeof books) { }
 
-  async findAll(res): Promise<books[]> {
+  async findAllForAdmin(req, res): Promise<books[]> {
   
     try{
-       const books:any = await this.BOOKS_REPOSITORY.findAll<books>();
+      const allBooks: any = await this.BOOKS_REPOSITORY.findAll<books>();
+      
+      let offset = req.body.page * req.body.pageSize
+      console.log(req.body);
+      
+      // const books:any = await this.BOOKS_REPOSITORY.findAll<books>({limit: req.body.pageSize, offset:offset});
+      const books:any = await this.BOOKS_REPOSITORY.findAll<books>();
+      if (req.body.isSort) {
+        books.sort(function(a, b) {
+          if (a.author > b.author) {
+              return 1;
+          }
+          if (a.author < b.author) {
+              return -1;
+          }
+          return 0;
+      });
+      }
+      const newArr = books.slice(req.body.page, req.body.page + req.body.pageSize)
+       
       return res.status(200).send({
       success: true,
-      data: books
+      data: newArr,
+      booksLength: allBooks.length
     });
-    } catch(error) {
+    } 
+    catch(error) {
       res.status(500).send({
         success: false,
         message: error
+        
+      });
+    }
+  }
+
+  async findAllBooks(req, res): Promise<books[]> {
+    try{
+      const books:any = await this.BOOKS_REPOSITORY.findAll<books>();
+      
+      return res.status(200).send({
+      success: true,
+      data: books,
+      
+    });
+    } 
+    catch(error) {
+      res.status(500).send({
+        success: false,
+        message: error
+        
+      });
+    }
+  }
+
+  async findAllBooksForSort(req, res): Promise<books[]> {
+    try{
+      const books:any = await this.BOOKS_REPOSITORY.findAll<books>();
+
+      books.sort(function(a, b) {
+        if (a.author > b.author) {
+            return 1;
+        }
+        if (a.author < b.author) {
+            return -1;
+        }
+        return 0;
+    });
+
+      return res.status(200).send({
+      success: true,
+      data: books,
+      
+    });
+    } 
+    catch(error) {
+      res.status(500).send({
+        success: false,
+        message: error
+        
       });
     }
   }
