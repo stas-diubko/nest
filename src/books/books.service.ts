@@ -1,34 +1,31 @@
 import { Injectable, Inject, HttpException } from '@nestjs/common';
-import { books } from './books.entity';
+import { Books } from './books.entity';
 import { Response } from 'express';
 import { getToken } from '../help/actions';
 
 @Injectable()
 export class BooksService {
   constructor(
-    @Inject('BOOKS_REPOSITORY') private readonly BOOKS_REPOSITORY: typeof books) { }
+    @Inject('BOOKS_REPOSITORY') private readonly BOOKS_REPOSITORY: typeof Books) { }
 
-  async findAllForAdmin(req, res): Promise<books[]> {
+  async findAllForAdmin(req, res): Promise<Books[]> {
   
     try{
-      const allBooks: any = await this.BOOKS_REPOSITORY.findAll<books>();
+      const allBooks: any = await this.BOOKS_REPOSITORY.findAll<Books>();
       
-      let offset = req.body.page * req.body.pageSize
-      console.log(req.body);
-      
-      // const books:any = await this.BOOKS_REPOSITORY.findAll<books>({limit: req.body.pageSize, offset:offset});
-      const books:any = await this.BOOKS_REPOSITORY.findAll<books>();
+      const books:any = await this.BOOKS_REPOSITORY.findAll<Books>();
       if (req.body.isSort) {
         books.sort(function(a, b) {
-          if (a.author > b.author) {
+          if (a.author < b.author) {
               return 1;
           }
-          if (a.author < b.author) {
+          if (a.author > b.author) {
               return -1;
           }
           return 0;
       });
       }
+      
       const newArr = books.slice(req.body.page, req.body.page + req.body.pageSize)
        
       return res.status(200).send({
@@ -46,9 +43,9 @@ export class BooksService {
     }
   }
 
-  async findAllBooks(req, res): Promise<books[]> {
+  async findAllBooks(req, res): Promise<Books[]> {
     try{
-      const books:any = await this.BOOKS_REPOSITORY.findAll<books>();
+      const books:any = await this.BOOKS_REPOSITORY.findAll<Books>();
       
       return res.status(200).send({
       success: true,
@@ -65,37 +62,8 @@ export class BooksService {
     }
   }
 
-  async findAllBooksForSort(req, res): Promise<books[]> {
-    try{
-      const books:any = await this.BOOKS_REPOSITORY.findAll<books>();
-
-      books.sort(function(a, b) {
-        if (a.author > b.author) {
-            return 1;
-        }
-        if (a.author < b.author) {
-            return -1;
-        }
-        return 0;
-    });
-
-      return res.status(200).send({
-      success: true,
-      data: books,
-      
-    });
-    } 
-    catch(error) {
-      res.status(500).send({
-        success: false,
-        message: error
-        
-      });
-    }
-  }
-
-  async findOne(req, res): Promise<books> {
-    let book: any = await this.BOOKS_REPOSITORY.findOne<books>({ where: { _id: req.params.id } });
+  async findOne(req, res): Promise<Books> {
+    let book: any = await this.BOOKS_REPOSITORY.findOne<Books>({ where: { _id: req.params.id } });
     if(book){
       return res.status(200).send({
         success: true,
@@ -111,11 +79,11 @@ export class BooksService {
 
   async updateBook(req, res): Promise<any> {
     try {
-      const books = await this.BOOKS_REPOSITORY.findOne<books>({ where: { _id: req.params.id } })
+      const books = await this.BOOKS_REPOSITORY.findOne<Books>({ where: { _id: req.params.id } })
 
      if(books) {
       const book = req.body;
-      await this.BOOKS_REPOSITORY.update<books>(book, { where: { _id: req.params.id } })
+      await this.BOOKS_REPOSITORY.update<Books>(book, { where: { _id: req.params.id } })
       return res.status(200).send({
         success: true
       });
@@ -158,7 +126,7 @@ export class BooksService {
     try{
       const book = req.body;
 
-      await this.BOOKS_REPOSITORY.create<books>(book)
+      await this.BOOKS_REPOSITORY.create<Books>(book)
       return res.status(200).send({
         success: true,
         message: 'Add is done!'

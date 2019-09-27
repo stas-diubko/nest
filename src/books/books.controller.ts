@@ -7,6 +7,7 @@ import { AuthGuard } from '@nestjs/passport';
 export class BooksController {
     constructor(private readonly booksService: BooksService) { }
     
+    @UseGuards(AuthGuard('jwt'))
     @Put()
     findAllForAdmin(@Req() req: Request, @Res() res: Response): any {
         return this.booksService.findAllForAdmin(req, res);
@@ -16,12 +17,7 @@ export class BooksController {
     findAllBooks(@Req() req: Request, @Res() res: Response): any {
         return this.booksService.findAllBooks(req, res);
     }
-
-    @Get('/sort')
-    findAllBooksForSort(@Req() req: Request, @Res() res: Response): any {
-        return this.booksService.findAllBooksForSort(req, res);
-    }
-
+    
     @Get('/:id')
     findOne(@Req() req: Request, @Res() res: Response): any {
         return this.booksService.findOne(req, res);
