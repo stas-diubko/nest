@@ -1,8 +1,8 @@
-import { Users } from '../users/users.entity';
+import { User } from '../documents/users.entity';
 
 export const authProviders = [
   {
     provide: 'AUTH_REPOSITORY',
-    useValue: Users,
+    useValue: User,
   },
 ];

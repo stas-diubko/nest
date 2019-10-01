@@ -5,7 +5,7 @@ import * as cors from 'cors';
 import * as helmet from 'helmet';
 import * as morgan from 'morgan';
 import conf from './config/config'
-import { ExceptionHandlerFilter } from './exception';
+import { ExceptionHandlerFilter } from './common/exception-handler.filter';
 
 async function bootstrap() {
 

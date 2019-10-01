@@ -1,20 +1,42 @@
 import { Injectable, Inject, UnauthorizedException } from '@nestjs/common';
 import * as bcrypt from "bcrypt"
-import { Users, Roles } from '../users/users.entity';
+import { User, Role } from '../documents/users.entity';
 import { JwtService } from '@nestjs/jwt';
 import { HttpException } from "@nestjs/common"
-import { ConfigService } from '../config/config.service';
+import { ConfigService } from './config.service';
 import * as jwtr from "jwt-then";
-import { validLogin } from '../help//login.valid';
+// import { validLogin } from '../help/login.valid';
 
+export const validLogin = (email, password) =>{
+ 
+    const errorObj = {
+      logErrorEmail: '',
+      logErrorPassword: ''
+    }
+    let stateValid = 0;
+    // const passWordExpr = new RegExp(/^[0-9]{3,}$/);
+    const emailRegExpr = new RegExp(/^\w+([\.-]?\w+)*@(((([a-z0-9]{2,})|([a-z0-9][-][a-z0-9]+))[\.][a-z0-9])|([a-z0-9]+[-]?))+[a-z0-9]+\.([a-z]{2}|(com|net|org|edu|int|mil|gov|arpa|biz|aero|name|coop|info|pro|museum))$/i);
 
+    if(!emailRegExpr.test(email)){
+        errorObj.logErrorEmail = 'Error: Email is not valid!';
+        
+    }else{++stateValid}
+    if(password.length < 5){
+        errorObj.logErrorPassword = 'Error: Password must be more than four characters';
+    }else{++stateValid}
+
+    return{
+      errorObj: errorObj,
+      stateValid: stateValid
+  }
+}
 
 @Injectable()
 
 export class AuthService{
   private test: any;
   public jwtService: JwtService;
-  @Inject('AUTH_REPOSITORY') private readonly AUTH_REPOSITORY: typeof Users
+  @Inject('AUTH_REPOSITORY') private readonly AUTH_REPOSITORY: typeof User
 
   constructor(config: ConfigService) {
     this.test = config.get('APP');
@@ -28,7 +50,7 @@ export class AuthService{
       throw new HttpException(loginValid.errorObj, 404);
     }
     
-    const user: any = await this.AUTH_REPOSITORY.findOne<Users>({ where: { email: email } })
+    const user: any = await this.AUTH_REPOSITORY.findOne<User>({ where: { email: email } })
     if (!user) {
       throw new HttpException('User not found', 404);
     }
@@ -42,10 +64,10 @@ export class AuthService{
   async login(user, res){   
         
     let permissions: any[] = [];
-    await this.AUTH_REPOSITORY.findAll<Users>({
+    await this.AUTH_REPOSITORY.findAll<User>({
       where: { id: user.id },
       include: [{
-        model: Roles,
+        model: Role,
       }]
 
     }).then((rolen: any) => rolen.forEach(el => {

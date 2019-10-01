@@ -1,5 +1,5 @@
 import { Controller, Get, Post, Req, Put, Delete, UseGuards, Res } from '@nestjs/common';
-import { BooksService } from './books.service';
+import { BooksService } from '../services/books.service';
 import { Request, Response } from 'express'
 import { AuthGuard } from '@nestjs/passport';
 

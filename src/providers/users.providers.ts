@@ -1,22 +1,22 @@
-import { Users, Roles , Users_roles} from './users.entity';
+import { User, Role , Users_role} from '../documents/users.entity';
 
 export const usersProviders = [
   {
     provide: 'USERS_REPOSITORY',
-    useValue: Users,
+    useValue: User,
   },
 ];
 
 export const rolesProviders = [
   {
     provide: 'ROLES_REPOSITORY',
-    useValue: Roles,
+    useValue: Role,
   },
 ];
 
 export const usersrolesProviders = [
   {
     provide: 'USER_ROLES_REPO',
-    useValue: Users_roles,
+    useValue: Users_role,
   },
 ];
