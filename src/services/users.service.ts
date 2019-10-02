@@ -3,8 +3,7 @@ import { User, Users_role, Role } from '../documents/users.entity';
 import * as bcrypt from "bcrypt"
 import * as jwt from "jwt-then";
 import { IsEmail } from 'sequelize-typescript';
-import { walidRegister } from '../help/register.valid'
-import { getToken } from '../help/actions';
+import { getToken } from '../common/actions';
 import * as jwtr from "jwt-then";
 import {UserRegisterModel, UserDeleteModel, GetAvatarModel, UpdateUserModel} from '../models/user.model';
 
@@ -112,6 +111,7 @@ export class UsersService {
   }
 
   async getAvatar(req, res): Promise<GetAvatarModel> {
+    console.log(2121651);
     
       const users: any = await this.USERS_REPOSITORY.findOne<User>({ attributes: ['image'], where: { id: req.params.id } });
       const avatar = users.dataValues.image

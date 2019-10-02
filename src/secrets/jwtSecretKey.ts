@@ -1,3 +1,6 @@
+import config from "../config/config";
+
+
 export const jwtConstants = {
-    secret: 'secret',
+    secret: config.JWT_ENCRYPTION,
   };

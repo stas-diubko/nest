@@ -5,27 +5,30 @@ import { JwtService } from '@nestjs/jwt';
 import { HttpException } from "@nestjs/common"
 import { ConfigService } from './config.service';
 import * as jwtr from "jwt-then";
+import { jwtConstants } from '../secrets/jwtSecretKey';
 // import { validLogin } from '../help/login.valid';
 
-export const validLogin = (email, password) =>{
+const validLogin = (email, password) =>{
  
     const errorObj = {
       logErrorEmail: '',
       logErrorPassword: ''
     }
+
     let stateValid = 0;
-    // const passWordExpr = new RegExp(/^[0-9]{3,}$/);
+
     const emailRegExpr = new RegExp(/^\w+([\.-]?\w+)*@(((([a-z0-9]{2,})|([a-z0-9][-][a-z0-9]+))[\.][a-z0-9])|([a-z0-9]+[-]?))+[a-z0-9]+\.([a-z]{2}|(com|net|org|edu|int|mil|gov|arpa|biz|aero|name|coop|info|pro|museum))$/i);
 
-    if(!emailRegExpr.test(email)){
+    if (!emailRegExpr.test(email)) {
         errorObj.logErrorEmail = 'Error: Email is not valid!';
         
-    }else{++stateValid}
-    if(password.length < 5){
-        errorObj.logErrorPassword = 'Error: Password must be more than four characters';
-    }else{++stateValid}
+    } else {++stateValid}
 
-    return{
+    if (password.length < 5) {
+        errorObj.logErrorPassword = 'Error: Password must be more than four characters';
+    } else {++stateValid}
+
+    return {
       errorObj: errorObj,
       stateValid: stateValid
   }
@@ -89,7 +92,7 @@ export class AuthService{
       isAdmin: isAdmin
     };
 
-    const token = await jwtr.sign(userLogin, 'secret')
+    const token = await jwtr.sign(userLogin, jwtConstants.secret)
      return res.status(200).send({
       success: true,
       data: token

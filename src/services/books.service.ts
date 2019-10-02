@@ -1,7 +1,7 @@
 import { Injectable, Inject, HttpException } from '@nestjs/common';
 import { Book } from '../documents/books.entity';
 import { Response } from 'express';
-import { getToken } from '../help/actions';
+import { getToken } from '../common/actions';
 import { AddBookModel, DeleteBookModel, UpdateBookModel, GetOneBookModel, GetAllBooksModel, GetAllBooksForAdminModel } from '../models/book.model';
 
 @Injectable()
