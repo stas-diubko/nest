@@ -3,19 +3,20 @@ import { Book } from '../documents/books.entity';
 import { Response } from 'express';
 import { getToken } from '../common/actions';
 import { AddBookModel, DeleteBookModel, UpdateBookModel, GetOneBookModel, GetAllBooksModel, GetAllBooksForAdminModel } from '../models/book.model';
+import { BooksRepository } from '../repositories';
 
 @Injectable()
 export class BooksService {
   constructor(
-    @Inject('BOOKS_REPOSITORY') private readonly BOOKS_REPOSITORY: typeof Book) { }
+    @Inject('BOOKS_REPOSITORY') private readonly BOOKS_REPOSITORY: typeof Book,
+    public booksRepository: BooksRepository 
+    ) { }
 
-  async findAllForAdmin(req, res): Promise<GetAllBooksForAdminModel> {
-  
-      const allBooks: any = await this.BOOKS_REPOSITORY.findAll<Book>();
-      
-      const books:any = await this.BOOKS_REPOSITORY.findAll<Book>();
-      if (req.body.isSort) {
-        books.sort(function(a, b) {
+  async findAllForAdmin(books): Promise<GetAllBooksForAdminModel> {
+   
+      const currentBooks:any = await this.booksRepository.findAllForAdmin();
+      if (books.body.isSort) {
+        currentBooks.sort(function(a, b) {
           if (a.author < b.author) {
               return 1;
           }
@@ -26,54 +27,34 @@ export class BooksService {
       });
       }
       
-      const newArr = books.slice(req.body.page, req.body.page + req.body.pageSize)
+      const newArr = currentBooks.slice(books.body.page, books.body.page + books.body.pageSize)
        
-      return res.status(200).send({
-      success: true,
-      data: newArr,
-      booksLength: allBooks.length
-    });
+      return { success: true, data: newArr, booksLength: currentBooks.length };
   }
 
-  async findAllBooks(req, res): Promise<GetAllBooksModel> {
-    
-      const books:any = await this.BOOKS_REPOSITORY.findAll<Book>();
-      
-      return res.status(200).send({
-      success: true,
-      data: books
-    });
+  async findAllBooks(): Promise<GetAllBooksModel> {
+      const books:any = await this.booksRepository.findAllBooks();
+      return { success: true,  data: books };
   }
 
-  async findOne(req, res): Promise<GetOneBookModel> {
-    let book: any = await this.BOOKS_REPOSITORY.findOne<Book>({ where: { _id: req.params.id } });
+  async findOne(book): Promise<GetOneBookModel> {
+    let currentBook: any = await this.booksRepository.findOne(book.params.id);
     
-    if(book){
-      return res.status(200).send({
-        success: true,
-        data: book
-      });
-    }else{
-      return res.status(404).send({
-        success: false,
-        message: 'Requset body is incorrect!',
-      });
+    if(currentBook){
+      return { success: true, data: currentBook };
     }
+    
   }
 
-  async updateBook(req, res): Promise<UpdateBookModel> {
-    const books = await this.BOOKS_REPOSITORY.findOne<Book>({ where: { _id: req.params.id } })
-
+  async updateBook(book): Promise<UpdateBookModel> {
+    
+    const books = await this.booksRepository.findOne(book.params.id)
+   
     if(books) {
-      const book = req.body;
-      await this.BOOKS_REPOSITORY.update<Book>(book, { where: { _id: req.params.id } })
-      return res.status(200).send({
-        success: true
-      });
-    } else return res.status(404).send({
-      success: false,
-      message: 'Book not found!',
-    }); 
+      const currentBook = book.body;
+      await this.booksRepository.updateBook(currentBook, book.params.id )
+      return { success: true };
+    }
   }
 
   async deleteBook(req, res): Promise<DeleteBookModel> {

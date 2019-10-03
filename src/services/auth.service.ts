@@ -6,7 +6,7 @@ import { HttpException } from "@nestjs/common"
 import { ConfigService } from './config.service';
 import * as jwtr from "jwt-then";
 import { jwtConstants } from '../secrets/jwtSecretKey';
-// import { validLogin } from '../help/login.valid';
+import { AuthRepository } from '../repositories';
 
 const validLogin = (email, password) =>{
  
@@ -41,7 +41,7 @@ export class AuthService{
   public jwtService: JwtService;
   @Inject('AUTH_REPOSITORY') private readonly AUTH_REPOSITORY: typeof User
 
-  constructor(config: ConfigService) {
+  constructor(config: ConfigService, public authRepository : AuthRepository) {
     this.test = config.get('APP');
   }
 
@@ -49,11 +49,12 @@ export class AuthService{
     
     let loginValid = await validLogin(email, password)
     
+    
     if(loginValid.stateValid !== 2 ){
       throw new HttpException(loginValid.errorObj, 404);
     }
     
-    const user: any = await this.AUTH_REPOSITORY.findOne<User>({ where: { email: email } })
+    const user: any = await this.authRepository.findOne(email)
     if (!user) {
       throw new HttpException('User not found', 404);
     }
@@ -64,38 +65,27 @@ export class AuthService{
     }else throw new HttpException('Email or password incorrect', 401);
   }
      
-  async login(user, res){   
+  async login(user){   
         
-    let permissions: any[] = [];
-    await this.AUTH_REPOSITORY.findAll<User>({
-      where: { id: user.id },
-      include: [{
-        model: Role,
-      }]
-
-    }).then((rolen: any) => rolen.forEach(el => {
-      el.roleId.forEach(element => {
-        permissions.push(element.dataValues.roleName);
-      });
-    }))
-    
+    let currentUser = user.user;
+      
+    let permissions: string;
+    permissions = await this.authRepository.findAll(currentUser.id);
+   
     let isAdmin = false;
 
-    if(permissions[0] == 'admin') {
+    if(permissions === 'admin') {
       isAdmin = true
     }
 
     const userLogin = {
-      id: user.id,
-      name: user.name,
-      email: user.email,
+      id: currentUser.id,
+      name: currentUser.name,
+      email: currentUser.email,
       isAdmin: isAdmin
     };
 
     const token = await jwtr.sign(userLogin, jwtConstants.secret)
-     return res.status(200).send({
-      success: true,
-      data: token
-    });
+     return { success: true, data: token };
   }
 }

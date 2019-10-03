@@ -13,6 +13,12 @@ export interface GetAvatarModel {
     data: string;
 }
 
+export interface GetUSersModel {
+    success: boolean;
+    data: string;
+    usersLength: string;
+}
+
 export interface UpdateUserModel {
     success: boolean;
     data: string;

@@ -10,37 +10,37 @@ export class UsersController {
     constructor(private readonly usersService: UsersService, private readonly authService: AuthService) { }
     @UseGuards(AuthGuard('jwt'))
     @Put()
-    findAll(@Req() req: Request, @Res() res: Response): any {
-        return this.usersService.findAll(req, res);
+    findAll(@Req() user: Request): any {
+        return this.usersService.findAll(user);
     }
 
     @UseGuards(AuthGuard('jwt'))
     @Get('/avatar/:id')
-    getAvatar(@Req() req: Request, @Res() res: Response) {
-        return this.usersService.getAvatar(req, res);
+    getAvatar(@Req() avatar: Request) {
+        return this.usersService.getAvatar(avatar);
     }
 
     @UseGuards(AuthGuard('jwt'))
     @Put('/avatar/:id')
-    changeUserData(@Req() req: Request, @Res() res: Response) {
-        return this.usersService.changeUserData(req, res);
+    updateUser(@Req() user: Request) {
+        return this.usersService.updateUser(user);
     }
 
     @UseGuards(AuthGuard('jwt'))
     @Get('/:id')
-    findOne(@Req() req: Request, @Res() res: Response): any {
-        return this.usersService.findOne(req, res);
+    findOne(@Req() user: Request): any {
+        return this.usersService.findOne(user);
     }
 
     @UseGuards(AuthGuard('jwt'))
     @Delete('/:id')
-    delete(@Req() req: Request, @Res() res: Response): any {
-        return this.usersService.delete(req, res);
+    delete(@Req() user: Request): any {
+        return this.usersService.delete(user);
     }
 
     @Post('/register')
-    register(@Req() req: Request, @Res() res: Response): any {
-        return this.usersService.register(req, res);
+    register(@Req() user: Request): any {
+        return this.usersService.register(user);
     }
 
 }

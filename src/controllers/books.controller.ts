@@ -9,24 +9,24 @@ export class BooksController {
     
     @UseGuards(AuthGuard('jwt'))
     @Put()
-    findAllForAdmin(@Req() req: Request, @Res() res: Response): any {
-        return this.booksService.findAllForAdmin(req, res);
+    findAllForAdmin(@Req() books: Request): any {
+        return this.booksService.findAllForAdmin(books);
     }
 
     @Get()
-    findAllBooks(@Req() req: Request, @Res() res: Response): any {
-        return this.booksService.findAllBooks(req, res);
+    findAllBooks(): any {
+        return this.booksService.findAllBooks();
     }
     
     @Get('/:id')
-    findOne(@Req() req: Request, @Res() res: Response): any {
-        return this.booksService.findOne(req, res);
+    findOne(@Req() book: Request): any {
+        return this.booksService.findOne(book);
     }
 
     @UseGuards(AuthGuard('jwt'))
     @Put('/:id')
-    updateBook(@Req() req: Request, @Res() res: Response): any {
-        return this.booksService.updateBook(req, res);
+    updateBook(@Req() book: Request): any {
+        return this.booksService.updateBook(book);
     }
 
     @UseGuards(AuthGuard('jwt'))

@@ -18,6 +18,7 @@ import { JwtModule } from '@nestjs/jwt';
 import { jwtConstants } from './secrets/jwtSecretKey';
 import { JwtStrategy } from './common/jwt.strategy';
 import { ConfigModule } from './config/config.module';
+import { AuthRepository, BooksRepository, UsersRepository, UserRolesRepository } from './repositories';
 
 @Module({
   imports: [
@@ -30,6 +31,10 @@ import { ConfigModule } from './config/config.module';
     }),],
   controllers: [BooksController, UsersController, AuthController],
   providers: [
+    AuthRepository,
+    BooksRepository,
+    UsersRepository,
+    UserRolesRepository,
     LocalStrategy,
     JwtStrategy,
     BooksService,
