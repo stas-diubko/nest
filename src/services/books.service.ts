@@ -1,6 +1,5 @@
-import { Injectable, Inject, HttpException } from '@nestjs/common';
+import { Injectable, Inject } from '@nestjs/common';
 import { Book } from '../documents/books.entity';
-import { Response } from 'express';
 import { getToken } from '../common/actions';
 import { AddBookModel, DeleteBookModel, UpdateBookModel, GetOneBookModel, GetAllBooksModel, GetAllBooksForAdminModel } from '../models/book.model';
 import { BooksRepository } from '../repositories';
@@ -13,7 +12,6 @@ export class BooksService {
     ) { }
 
   async findAllForAdmin(books): Promise<GetAllBooksForAdminModel> {
-   
       const currentBooks:any = await this.booksRepository.findAllForAdmin();
       if (books.body.isSort) {
         currentBooks.sort(function(a, b) {
@@ -29,25 +27,30 @@ export class BooksService {
       
       const newArr = currentBooks.slice(books.body.page, books.body.page + books.body.pageSize)
        
-      return { success: true, data: newArr, booksLength: currentBooks.length };
+      return { 
+        data: newArr, 
+        booksLength: currentBooks.length 
+      };
   }
 
   async findAllBooks(): Promise<GetAllBooksModel> {
       const books:any = await this.booksRepository.findAllBooks();
-      return { success: true,  data: books };
+      return {  
+        data: books 
+      };
   }
 
   async findOne(book): Promise<GetOneBookModel> {
     let currentBook: any = await this.booksRepository.findOne(book.params.id);
     
     if(currentBook){
-      return { success: true, data: currentBook };
+      return { 
+        data: currentBook 
+      };
     }
-    
   }
 
   async updateBook(book): Promise<UpdateBookModel> {
-    
     const books = await this.booksRepository.findOne(book.params.id)
    
     if(books) {
@@ -57,28 +60,18 @@ export class BooksService {
     }
   }
 
-  async deleteBook(req, res): Promise<DeleteBookModel> {
-    let token = await getToken(req.headers.authorization);
+  async deleteBook(book): Promise<DeleteBookModel> {
+    let token = await getToken(book.headers.authorization);
     
       if(token.isAdmin){
-        await this.BOOKS_REPOSITORY.destroy({ where: { _id: req.params.id } })
-          return res.status(200).send({
-            success: true
-          });
+        await this.booksRepository.deleteBook(book.params.id)
+          return { success: true };
       }
-      else return res.status(404).send({
-          success: false,
-          message: 'Requset body is not correct!',
-        });
   }
 
-  async addBook(req, res): Promise<AddBookModel> {
-      const book = req.body;
-
-      await this.BOOKS_REPOSITORY.create<Book>(book)
-      return res.status(200).send({
-        success: true,
-        message: 'Add is done!'
-      });
+  async addBook(book): Promise<AddBookModel> {
+      const currentBook = book.body;
+      await this.booksRepository.addBook(currentBook)
+      return { success: true, message: 'Add is done!' };
   }
 }

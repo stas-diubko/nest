@@ -12,17 +12,14 @@ export interface UpdateBookModel {
 }
 
 export interface GetOneBookModel {
-    success: boolean;
     data: object;
 }
 
 export interface GetAllBooksModel {
-    success: boolean;
     data: object;
 }
 
 export interface GetAllBooksForAdminModel {
-    success: boolean;
     data: object;
     booksLength: number;
 }

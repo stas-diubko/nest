@@ -9,14 +9,16 @@ export interface UserDeleteModel {
 }
 
 export interface GetAvatarModel {
-    success: boolean;
     data: string;
 }
 
-export interface GetUSersModel {
-    success: boolean;
+export interface GetUsersModel {
     data: string;
     usersLength: string;
+}
+
+export interface GetOneUserModel {
+    data: string;
 }
 
 export interface UpdateUserModel {

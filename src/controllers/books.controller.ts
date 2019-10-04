@@ -31,13 +31,13 @@ export class BooksController {
 
     @UseGuards(AuthGuard('jwt'))
     @Delete('/:id')
-    deleteBook(@Req() req: Request, @Res() res: Response): any {
-        return this.booksService.deleteBook(req, res);
+    deleteBook(@Req() book: Request): any {
+        return this.booksService.deleteBook(book);
     }
 
     @UseGuards(AuthGuard('jwt'))
     @Post()
-    addBook(@Req() req: Request, @Res() res: Response): any {
-        return this.booksService.addBook(req, res);
+    addBook(@Req() book: Request): any {
+        return this.booksService.addBook(book);
     }
 }
