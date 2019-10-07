@@ -1,7 +1,9 @@
-import { Controller, Get, Post, Req, Put, Delete, UseGuards, Res } from '@nestjs/common';
+import { Controller, Get, Post, Req, Put, Delete, UseGuards, Res, SetMetadata } from '@nestjs/common';
 import { BooksService } from '../services/books.service';
 import { Request, Response } from 'express'
 import { AuthGuard } from '@nestjs/passport';
+import {Roles} from "../common/roles.decorator"
+import { RolesGuard } from '../common/role.guard';
 
 @Controller('books')
 export class BooksController {
@@ -29,8 +31,9 @@ export class BooksController {
         return this.booksService.updateBook(book);
     }
 
-    @UseGuards(AuthGuard('jwt'))
+    @UseGuards(RolesGuard)
     @Delete('/:id')
+    @Roles('admin')
     deleteBook(@Req() book: Request): any {
         return this.booksService.deleteBook(book);
     }

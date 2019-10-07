@@ -82,7 +82,8 @@ export class AuthService{
       id: currentUser.id,
       name: currentUser.name,
       email: currentUser.email,
-      isAdmin: isAdmin
+      // isAdmin: isAdmin
+      role: permissions
     };
 
     const token = await jwtr.sign(userLogin, jwtConstants.secret)
