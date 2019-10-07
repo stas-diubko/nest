@@ -30,16 +30,6 @@ export class UsersService {
     } 
   }
 
-  async findOne(user): Promise<GetOneUserModel> {
-    let role = await getToken(user.headers.authorization);
-    if(role.isAdmin === 'admin'){
-      const targetUser = await this.usersRepository.findOne({ attributes: ['id', 'name', 'email'], where: { id: user.params.id } });
-      return { 
-        data: targetUser 
-      }
-    }
-  }
-
   async updateUser(user): Promise<UpdateUserModel> {
      
     const users: any = await this.usersRepository.findOne({ where: { id: user.params.id } });
@@ -65,17 +55,11 @@ export class UsersService {
       });
     }))
    
-    let isAdmin = false;
-
-    if(permissions[0] == 'admin') {
-      isAdmin = true
-    }
-
     const userChanged = {
       id: targetUser.dataValues.id,
       name:  targetUser.dataValues.name,
       email:  targetUser.dataValues.email,
-      isAdmin: isAdmin,
+      role: permissions[0],
     };
 
     const token = await jwtr.sign(userChanged, jwtConstants.secret)
@@ -96,9 +80,6 @@ export class UsersService {
   }
 
   async delete(user): Promise<UserDeleteModel> {
-    let token = await getToken(user.headers.authorization);
-    
-      if(token.isAdmin){
         const check = await this.usersRepository.findOne({ where: { id: user.params.id } });
         if (check) {
           await this.userRolesRepository.destroyUserRoles({ where: { users_id: user.params.id } });
@@ -108,7 +89,6 @@ export class UsersService {
             message: 'Delete is done' 
           };
         } 
-        }
   }
 
   async register(user): Promise<UserRegisterModel> {

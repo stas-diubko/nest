@@ -4,6 +4,8 @@ import { Request, Response } from 'express'
 import { AuthGuard } from '@nestjs/passport';
 import { AuthService } from '../services/auth.service';
 import * as Request1 from "@nestjs/common"
+import { Roles } from "../common/roles.decorator"
+import { RolesGuard } from '../common/role.guard';
 
 @Controller('users')
 export class UsersController {
@@ -26,14 +28,9 @@ export class UsersController {
         return this.usersService.updateUser(user);
     }
 
-    @UseGuards(AuthGuard('jwt'))
-    @Get('/:id')
-    findOne(@Req() user: Request): any {
-        return this.usersService.findOne(user);
-    }
-
-    @UseGuards(AuthGuard('jwt'))
+    @UseGuards(RolesGuard)
     @Delete('/:id')
+    @Roles('admin')
     delete(@Req() user: Request): any {
         return this.usersService.delete(user);
     }
