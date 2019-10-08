@@ -1,9 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { Role } from '../documents/users.entity';
 import * as bcrypt from "bcrypt";
-import { getToken } from '../common/actions';
 import * as jwtr from "jwt-then";
-import {UserRegisterModel, UserDeleteModel, GetAvatarModel, UpdateUserModel, GetUsersModel, GetOneUserModel} from '../models/user.model';
+import { UserBaseModel, GetAvatarModel, UpdateUserModel, GetUsersModel } from '../models/user.model';
 import { jwtConstants } from '../secrets/jwtSecretKey';
 import { UsersRepository, UserRolesRepository } from '../repositories';
 
@@ -79,7 +78,7 @@ export class UsersService {
     };
   }
 
-  async delete(user): Promise<UserDeleteModel> {
+  async delete(user): Promise<UserBaseModel> {
         const check = await this.usersRepository.findOne({ where: { id: user.params.id } });
         if (check) {
           await this.userRolesRepository.destroyUserRoles({ where: { users_id: user.params.id } });
@@ -91,7 +90,7 @@ export class UsersService {
         } 
   }
 
-  async register(user): Promise<UserRegisterModel> {
+  async register(user): Promise<UserBaseModel> {
       
     const newUser: any = {
       id: null,
@@ -105,9 +104,8 @@ export class UsersService {
       
       if (!matchUser) {
         
-        await this.usersRepository.register(newUser);
+        let user = await this.usersRepository.register(newUser);
         
-        const user: any = await this.usersRepository.findOne({ attributes: ['id'], where: { email: newUser.email } });
         const newId = user.dataValues.id
         const newRole = {
           users_id: newId,

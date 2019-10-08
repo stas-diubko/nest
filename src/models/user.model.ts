@@ -1,9 +1,4 @@
-export interface UserRegisterModel {
-    success: boolean;
-    message: string;
-}
-
-export interface UserDeleteModel {
+export interface UserBaseModel {
     success: boolean;
     message: string;
 }
@@ -15,10 +10,6 @@ export interface GetAvatarModel {
 export interface GetUsersModel {
     data: string;
     usersLength: string;
-}
-
-export interface GetOneUserModel {
-    data: string;
 }
 
 export interface UpdateUserModel {

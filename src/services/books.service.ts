@@ -1,7 +1,7 @@
 import { Injectable, Inject } from '@nestjs/common';
 import { Book } from '../documents/books.entity';
 import { getToken } from '../common/actions';
-import { AddBookModel, DeleteBookModel, UpdateBookModel, GetOneBookModel, GetAllBooksModel, GetAllBooksForAdminModel } from '../models/book.model';
+import { AddBookModel, UpdateBookModel, GetAllBooksModel, GetAllBooksForAdminModel } from '../models/book.model';
 import { BooksRepository } from '../repositories';
 
 @Injectable()
@@ -40,7 +40,7 @@ export class BooksService {
       };
   }
 
-  async findOne(book): Promise<GetOneBookModel> {
+  async findOne(book): Promise<GetAllBooksModel> {
     let currentBook: any = await this.booksRepository.findOne(book.params.id);
     
     if(currentBook){
@@ -60,7 +60,7 @@ export class BooksService {
     }
   }
 
-  async deleteBook(book): Promise<DeleteBookModel> {
+  async deleteBook(book): Promise<UpdateBookModel> {
     
         await this.booksRepository.deleteBook(book.params.id)
           return { success: true };

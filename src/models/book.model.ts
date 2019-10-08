@@ -3,16 +3,8 @@ export interface AddBookModel {
     message: string;
 }
 
-export interface DeleteBookModel {
-    success: boolean;
-}
-
 export interface UpdateBookModel {
     success: boolean;
-}
-
-export interface GetOneBookModel {
-    data: object;
 }
 
 export interface GetAllBooksModel {

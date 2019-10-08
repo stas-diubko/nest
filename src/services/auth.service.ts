@@ -8,46 +8,49 @@ import * as jwtr from "jwt-then";
 import { jwtConstants } from '../secrets/jwtSecretKey';
 import { AuthRepository } from '../repositories';
 
-const validLogin = (email, password) =>{
- 
-    const errorObj = {
-      logErrorEmail: '',
-      logErrorPassword: ''
-    }
 
-    let stateValid = 0;
-
-    const emailRegExpr = new RegExp(/^\w+([\.-]?\w+)*@(((([a-z0-9]{2,})|([a-z0-9][-][a-z0-9]+))[\.][a-z0-9])|([a-z0-9]+[-]?))+[a-z0-9]+\.([a-z]{2}|(com|net|org|edu|int|mil|gov|arpa|biz|aero|name|coop|info|pro|museum))$/i);
-
-    if (!emailRegExpr.test(email)) {
-        errorObj.logErrorEmail = 'Error: Email is not valid!';
-        
-    } else {++stateValid}
-
-    if (password.length < 5) {
-        errorObj.logErrorPassword = 'Error: Password must be more than four characters';
-    } else {++stateValid}
-
-    return {
-      errorObj: errorObj,
-      stateValid: stateValid
-  }
-}
 
 @Injectable()
 
 export class AuthService{
+    
   private test: any;
   public jwtService: JwtService;
-  @Inject('AUTH_REPOSITORY') private readonly AUTH_REPOSITORY: typeof User
+  // @Inject('AUTH_REPOSITORY') private readonly AUTH_REPOSITORY: typeof User
 
   constructor(config: ConfigService, public authRepository : AuthRepository) {
     this.test = config.get('APP');
   }
 
+    validLogin = (email, password) =>{
+    
+      const errorObj = {
+        logErrorEmail: '',
+        logErrorPassword: ''
+      }
+
+      let stateValid = 0;
+
+      const emailRegExpr = new RegExp(/^\w+([\.-]?\w+)*@(((([a-z0-9]{2,})|([a-z0-9][-][a-z0-9]+))[\.][a-z0-9])|([a-z0-9]+[-]?))+[a-z0-9]+\.([a-z]{2}|(com|net|org|edu|int|mil|gov|arpa|biz|aero|name|coop|info|pro|museum))$/i);
+
+      if (!emailRegExpr.test(email)) {
+          errorObj.logErrorEmail = 'Error: Email is not valid!';
+          
+      } else {++stateValid}
+
+      if (password.length < 5) {
+          errorObj.logErrorPassword = 'Error: Password must be more than four characters';
+      } else {++stateValid}
+
+      return {
+        errorObj: errorObj,
+        stateValid: stateValid
+    }
+  }
+
   async validateUser(email: string, password: string): Promise<any> {
     
-    let loginValid = await validLogin(email, password)
+    let loginValid = await this.validLogin(email, password)
     
     
     if(loginValid.stateValid !== 2 ){
