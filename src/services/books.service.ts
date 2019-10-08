@@ -61,12 +61,9 @@ export class BooksService {
   }
 
   async deleteBook(book): Promise<DeleteBookModel> {
-    // let token = await getToken(book.headers.authorization);
     
-      // if(token.role == "admin"){
         await this.booksRepository.deleteBook(book.params.id)
           return { success: true };
-      // }
   }
 
   async addBook(book): Promise<AddBookModel> {

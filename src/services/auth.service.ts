@@ -82,7 +82,6 @@ export class AuthService{
       id: currentUser.id,
       name: currentUser.name,
       email: currentUser.email,
-      // isAdmin: isAdmin
       role: permissions
     };
 
