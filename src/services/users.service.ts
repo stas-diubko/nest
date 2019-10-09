@@ -13,13 +13,13 @@ export class UsersService {
     public userRolesRepository: UserRolesRepository
   ) { }
 
-  async findAll(user): Promise<GetUsersModel> {
-
-    const allUsers: any = await this.usersRepository.findAll(user);
+  async findAll(userBody): Promise<GetUsersModel> {
     
-    let offset = user.body.page * user.body.pageSize
+    const allUsers: any = await this.usersRepository.findAll(userBody);
     
-    const users: any = await this.usersRepository.findAll({limit: user.body.pageSize, offset:offset});
+    let offset = userBody.page * userBody.pageSize
+    
+    const users: any = await this.usersRepository.findAll({limit: userBody.pageSize, offset:offset});
             
     if (users.length !== 0) {
       return {
@@ -29,16 +29,16 @@ export class UsersService {
     } 
   }
 
-  async updateUser(user): Promise<UpdateUserModel> {
-     
-    const users: any = await this.usersRepository.findOne({ where: { id: user.params.id } });
+  async updateUser(userBody, userId): Promise<UpdateUserModel> {
+    
+    const users: any = await this.usersRepository.findOne({ where: { id: userId } });
     
     if (users) {
       
-    await this.usersRepository.updateUser(user.body, { where: { id: user.params.id } });
-    
-    const targetUser = await this.usersRepository.findOne({where: { id: user.params.id } });
+    await this.usersRepository.updateUser(userBody, { where: { id: userId } });
         
+    const targetUser = await this.usersRepository.findOne({where: { id: userId } });
+    
     let permissions: any[] = [];
         
     await this.usersRepository.findAll(
@@ -70,19 +70,19 @@ export class UsersService {
     } 
   }
 
-  async getAvatar(user): Promise<GetAvatarModel> {
-    const users: any = await this.usersRepository.findOne({ attributes: ['image'], where: { id: user.params.id } });
+  async getAvatar(avatarId): Promise<GetAvatarModel> {
+    const users: any = await this.usersRepository.findOne({ attributes: ['image'], where: { id: avatarId } });
     const avatar = users.dataValues.image
     return {
       data: avatar 
     };
   }
 
-  async delete(user): Promise<UserBaseModel> {
-        const check = await this.usersRepository.findOne({ where: { id: user.params.id } });
+  async delete(userId): Promise<UserBaseModel> {
+        const check = await this.usersRepository.findOne({ where: { id: userId } });
         if (check) {
-          await this.userRolesRepository.destroyUserRoles({ where: { users_id: user.params.id } });
-          await this.usersRepository.delete({ where: { id: user.params.id } });
+          await this.userRolesRepository.destroyUserRoles({ where: { users_id: userId } });
+          await this.usersRepository.delete({ where: { id: userId } });
           return { 
             success: true,  
             message: 'Delete is done' 
@@ -90,14 +90,14 @@ export class UsersService {
         } 
   }
 
-  async register(user): Promise<UserBaseModel> {
+  async register(userBody): Promise<UserBaseModel> {
       
     const newUser: any = {
       id: null,
-      name: user.body.name,
-      password: await bcrypt.hash(user.body.password, 10),
-      email: user.body.email,
-      image: user.body.imgChange 
+      name: userBody.name,
+      password: await bcrypt.hash(userBody.password, 10),
+      email: userBody.email,
+      image: userBody.imgChange 
     };
               
       const matchUser: any = await this.usersRepository.findOne({ where: { email: newUser.email } })

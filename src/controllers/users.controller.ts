@@ -12,31 +12,31 @@ export class UsersController {
     @UseGuards(AuthGuard('jwt'))
     @Put()
     findAll(@Req() user: Request): any {
-        return this.usersService.findAll(user);
+        return this.usersService.findAll(user.body);
     }
 
     @UseGuards(AuthGuard('jwt'))
     @Get('/avatar/:id')
-    getAvatar(@Req() avatar: Request) {
-        return this.usersService.getAvatar(avatar);
+    getAvatar(@Req() req: Request) {
+        return this.usersService.getAvatar(req.params.id);
     }
 
     @UseGuards(AuthGuard('jwt'))
     @Put('/avatar/:id')
     updateUser(@Req() user: Request) {
-        return this.usersService.updateUser(user);
+        return this.usersService.updateUser(user.body, user.params.id);
     }
 
     @UseGuards(RolesGuard)
     @Delete('/:id')
     @Roles('admin')
     delete(@Req() user: Request): any {
-        return this.usersService.delete(user);
+        return this.usersService.delete(user.params.id);
     }
 
     @Post('/register')
     register(@Req() user: Request): any {
-        return this.usersService.register(user);
+        return this.usersService.register(user.body);
     }
 
 }

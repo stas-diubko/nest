@@ -13,7 +13,7 @@ export class BooksController {
     @Put()
     @Roles('admin')
     findAllForAdmin(@Req() books: Request): any {
-        return this.booksService.findAllForAdmin(books);
+        return this.booksService.findAllForAdmin(books.body);
     }
 
     @Get()
@@ -23,27 +23,27 @@ export class BooksController {
     
     @Get('/:id')
     findOne(@Req() book: Request): any {
-        return this.booksService.findOne(book);
+        return this.booksService.findOne(book.params.id);
     }
 
     @UseGuards(RolesGuard)
     @Put('/:id')
     @Roles('admin')
     updateBook(@Req() book: Request): any {
-        return this.booksService.updateBook(book);
+        return this.booksService.updateBook(book.body, book.params.id);
     }
 
     @UseGuards(RolesGuard)
     @Delete('/:id')
     @Roles('admin')
     deleteBook(@Req() book: Request): any {
-        return this.booksService.deleteBook(book);
+        return this.booksService.deleteBook(book.params.id);
     }
 
     @UseGuards(RolesGuard)
     @Post()
     @Roles('admin')
     addBook(@Req() book: Request): any {
-        return this.booksService.addBook(book);
+        return this.booksService.addBook(book.body);
     }
 }

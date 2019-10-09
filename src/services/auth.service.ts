@@ -16,8 +16,7 @@ export class AuthService{
     
   private test: any;
   public jwtService: JwtService;
-  // @Inject('AUTH_REPOSITORY') private readonly AUTH_REPOSITORY: typeof User
-
+ 
   constructor(config: ConfigService, public authRepository : AuthRepository) {
     this.test = config.get('APP');
   }
@@ -68,23 +67,15 @@ export class AuthService{
     }else throw new HttpException('Email or password incorrect', 401);
   }
      
-  async login(user){   
-        
-    let currentUser = user.user;
+  async login(user){
       
     let permissions: string;
-    permissions = await this.authRepository.findAll(currentUser.id);
+    permissions = await this.authRepository.findAll(user.user.id);
    
-    let isAdmin = false;
-
-    if(permissions === 'admin') {
-      isAdmin = true
-    }
-
     const userLogin = {
-      id: currentUser.id,
-      name: currentUser.name,
-      email: currentUser.email,
+      id: user.user.id,
+      name: user.user.name,
+      email: user.user.email,
       role: permissions
     };
 

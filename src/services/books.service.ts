@@ -1,19 +1,18 @@
 import { Injectable, Inject } from '@nestjs/common';
-import { Book } from '../documents/books.entity';
-import { getToken } from '../common/actions';
 import { AddBookModel, UpdateBookModel, GetAllBooksModel, GetAllBooksForAdminModel } from '../models/book.model';
 import { BooksRepository } from '../repositories';
 
 @Injectable()
 export class BooksService {
   constructor(
-    @Inject('BOOKS_REPOSITORY') private readonly BOOKS_REPOSITORY: typeof Book,
-    public booksRepository: BooksRepository 
+      public booksRepository: BooksRepository
     ) { }
 
-  async findAllForAdmin(books): Promise<GetAllBooksForAdminModel> {
-      const currentBooks:any = await this.booksRepository.findAllForAdmin();
-      if (books.body.isSort) {
+  async findAllForAdmin(booksBody): Promise<GetAllBooksForAdminModel> {
+
+      const currentBooks = await this.booksRepository.findAllForAdmin();
+      
+      if (booksBody.isSort) {
         currentBooks.sort(function(a, b) {
           if (a.author < b.author) {
               return 1;
@@ -25,7 +24,7 @@ export class BooksService {
       });
       }
       
-      const newArr = currentBooks.slice(books.body.page, books.body.page + books.body.pageSize)
+      const newArr = currentBooks.slice(booksBody.page, booksBody.page + booksBody.pageSize)
        
       return { 
         data: newArr, 
@@ -40,35 +39,37 @@ export class BooksService {
       };
   }
 
-  async findOne(book): Promise<GetAllBooksModel> {
-    let currentBook: any = await this.booksRepository.findOne(book.params.id);
+  async findOne(bookId): Promise<GetAllBooksModel> {
+
+    let currentBook = await this.booksRepository.findOne(bookId);
     
     if(currentBook){
       return { 
         data: currentBook 
       };
     }
+    
   }
 
-  async updateBook(book): Promise<UpdateBookModel> {
-    const books = await this.booksRepository.findOne(book.params.id)
+  async updateBook(bookBody, bookId): Promise<UpdateBookModel> {
+
+    const books = await this.booksRepository.findOne(bookId)
    
     if(books) {
-      const currentBook = book.body;
-      await this.booksRepository.updateBook(currentBook, book.params.id )
+      const currentBook = bookBody;
+      await this.booksRepository.updateBook(currentBook, bookId )
       return { success: true };
     }
+
   }
 
-  async deleteBook(book): Promise<UpdateBookModel> {
-    
-        await this.booksRepository.deleteBook(book.params.id)
+  async deleteBook(bookId): Promise<UpdateBookModel> {
+        await this.booksRepository.deleteBook(bookId)
           return { success: true };
   }
 
   async addBook(book): Promise<AddBookModel> {
-      const currentBook = book.body;
-      await this.booksRepository.addBook(currentBook)
+      await this.booksRepository.addBook(book)
       return { success: true, message: 'Add is done!' };
   }
 }
