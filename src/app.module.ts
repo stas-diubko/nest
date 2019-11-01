@@ -15,8 +15,11 @@ import { JwtModule } from '@nestjs/jwt';
 import { jwtConstants } from './secrets/jwtSecretKey';
 import { JwtStrategy } from './common/jwt.strategy';
 import { ConfigModule } from './config/config.module';
-import { AuthRepository, BooksRepository, UsersRepository, UserRolesRepository } from './repositories';
+import { AuthRepository, BooksRepository, UsersRepository, UserRolesRepository, CartRepository } from './repositories';
 import { RolesGuard } from './common/role.guard';
+import { CartController } from './controllers/cart.controller';
+import { cartProviders } from './providers/cart.providers';
+import { CartService } from './services/cart.service';
 
 
 @Module({
@@ -28,8 +31,9 @@ import { RolesGuard } from './common/role.guard';
       secret: jwtConstants.secret,
       signOptions: { expiresIn: '2h' },
     }),],
-  controllers: [BooksController, UsersController, AuthController],
+  controllers: [BooksController, UsersController, AuthController, CartController],
   providers: [
+    CartRepository,
     AuthRepository,
     BooksRepository,
     UsersRepository,
@@ -44,6 +48,8 @@ import { RolesGuard } from './common/role.guard';
     ...authProviders,
     ...rolesProviders,
     ...usersrolesProviders,
+    CartService,
+    ...cartProviders,
     RolesGuard
   ]
 }

@@ -1,9 +1,10 @@
-import { Controller, Get, Post, Req, Put, Delete, UseGuards, Res } from '@nestjs/common';
+import { Controller, Get, Post, Req, Put, Delete, UseGuards, Body } from '@nestjs/common';
 import { BooksService } from '../services/books.service';
 import { Request, Response } from 'express'
 import { AuthGuard } from '@nestjs/passport';
 import { Roles } from "../common/roles.decorator"
 import { RolesGuard } from '../common/role.guard';
+import { AddBooksViewModel } from '../models/book.model';
 
 @Controller('books')
 export class BooksController {
@@ -29,7 +30,7 @@ export class BooksController {
     @UseGuards(RolesGuard)
     @Put('/:id')
     @Roles('admin')
-    updateBook(@Req() book: Request): any {
+    updateBook(@Req() book: Request){
         return this.booksService.updateBook(book.body, book.params.id);
     }
 
@@ -43,7 +44,7 @@ export class BooksController {
     @UseGuards(RolesGuard)
     @Post()
     @Roles('admin')
-    addBook(@Req() book: Request): any {
-        return this.booksService.addBook(book.body);
-    }
+    addBook(@Body() book:AddBooksViewModel) {
+        return this.booksService.addBook(book);
+    } 
 }

@@ -1,5 +1,6 @@
 import { Injectable, Inject } from '@nestjs/common';
 import { Book } from '../documents';
+import { Sequelize } from 'sequelize/types';
 
 
 @Injectable()
@@ -8,6 +9,7 @@ export class BooksRepository {
     
     async findAllForAdmin(){
         return  this.BOOKS_REPOSITORY.findAll<Book>();
+        
     }
     async findAllBooks(){
         return  this.BOOKS_REPOSITORY.findAll<Book>();

@@ -2,6 +2,7 @@ import { Sequelize } from 'sequelize-typescript';
 import { Book } from '../documents/books.entity';
 import { User, Users_role, Role } from '../documents/users.entity';
 import env from '../config/config'
+import { Cart } from '../documents';
  
 export const databaseProviders = [
 
@@ -21,7 +22,7 @@ export const databaseProviders = [
         }
       });
 
-      sequelize.addModels([Book, User, Users_role, Role]);
+      sequelize.addModels([Book, User, Users_role, Role, Cart]);
       await sequelize.sync();
       return sequelize;
     },

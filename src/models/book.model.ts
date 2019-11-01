@@ -15,3 +15,7 @@ export interface GetAllBooksForAdminModel {
     data: object;
     booksLength: number;
 }
+
+export interface AddBooksViewModel {
+    body: object;
+}
