@@ -34,6 +34,35 @@ export class CartService {
         data: targetProducts 
       };
   }
+  async getCartLength(userId): Promise<any> {
+    const products = await this.cartRepository.findAllProducts(userId);
+    let books = await this.booksRepository.findAllBooks()
+    let targetProducts = []
+    for(let i = 0; i < books.length; i++) {
+      for (let g = 0; g < products.length; g++) {
+        if (books[i]._id == products[g].bookId) {
+          targetProducts.push({
+            userId: products[g].userId,
+            bookId: books[i]._id,
+            title: books[i].title,
+            author: books[i].author,
+            description: books[i].description,
+            price: books[i].price,
+            bookImage: books[i].bookImage,
+            quantity: products[g].quantity
+          })
+        }
+      }
+    }
+
+    let isLength = false;
+    if (targetProducts.length !== 0) {
+      isLength = true;
+    }
+    return {  
+      data: isLength
+    };
+}
 
   async deleteProduct(userId, bookId): Promise<any> {
     await this.cartRepository.deleteProduct(userId, bookId)

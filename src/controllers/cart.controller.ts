@@ -20,6 +20,11 @@ export class CartController {
         return this.cartService.findAllProducts(req.params.id);
     }
 
+    @Get('/length/:id')
+    getCartLength(@Req() req: Request) {
+        return this.cartService.getCartLength(req.params.id);
+    }
+
     @Put('/:id')
     updateProduct(@Body() product: AddCartViewModel, @Req() req: Request) {
         return this.cartService.updateProduct(product, req.params.id)
