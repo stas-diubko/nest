@@ -5,6 +5,7 @@ import * as jwtr from "jwt-then";
 import { UserBaseModel, GetAvatarModel, UpdateUserModel, GetUsersModel } from '../models/user.model';
 import { jwtConstants } from '../secrets/jwtSecretKey';
 import { UsersRepository, UserRolesRepository } from '../repositories';
+// import * as jwt_decode from "jwt-decode";
 
 @Injectable()
 export class UsersService {
@@ -68,6 +69,32 @@ export class UsersService {
         data: token 
       };
     } 
+  }
+
+   async updateUserPassword(body, userId): Promise<any> {
+    
+    const users: any = await this.usersRepository.findOne({ where: { id: userId } });
+    // let currentPass =  await bcrypt.hash(body.currentPassword, 10)
+  
+    let isPasswordValid = await bcrypt.compare(body.currentPassword, users.password)
+    
+    // let bodyUpdate = {
+      users.password = await bcrypt.hash(body.currentPassword, 10)
+    // }
+
+    if (isPasswordValid) {
+      await this.usersRepository.updateUser(users, { where: { id: userId } });
+      return { 
+        success: true, 
+        data: 'Password successfully updated!' 
+      };
+    } else {
+        return { 
+          success: false, 
+          data: 'Data is not correct!' 
+        };
+    }
+
   }
 
   async getAvatar(avatarId): Promise<GetAvatarModel> {

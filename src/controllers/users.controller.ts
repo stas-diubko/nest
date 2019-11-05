@@ -27,6 +27,12 @@ export class UsersController {
         return this.usersService.updateUser(user.body, user.params.id);
     }
 
+    @UseGuards(AuthGuard('jwt'))
+    @Put('/password/:id')
+    updateUserPassword(@Req() user: Request) {
+        return this.usersService.updateUserPassword(user.body, user.params.id);
+    }
+
     @UseGuards(RolesGuard)
     @Delete('/:id')
     @Roles('admin')
