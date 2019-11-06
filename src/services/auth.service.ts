@@ -37,7 +37,7 @@ export class AuthService{
           
       } else {++stateValid}
 
-      if (password.length < 5) {
+      if (password.length < 3) {
           errorObj.logErrorPassword = 'Error: Password must be more than four characters';
       } else {++stateValid}
 

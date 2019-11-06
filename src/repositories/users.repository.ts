@@ -11,7 +11,9 @@ export class UsersRepository {
     async findOne(parametrs: any){
         return this.USERS_REPOSITORY.findOne<User>(parametrs);
     }
-    async updateUser(body: User, id: any){
+    async updateUser(body: any, id: any){
+        // console.log(body);
+        
         return this.USERS_REPOSITORY.update<User>(body, id);
     }
     async delete(parametrs: any){

@@ -5,6 +5,7 @@ import * as jwtr from "jwt-then";
 import { UserBaseModel, GetAvatarModel, UpdateUserModel, GetUsersModel } from '../models/user.model';
 import { jwtConstants } from '../secrets/jwtSecretKey';
 import { UsersRepository, UserRolesRepository } from '../repositories';
+import { templateEmail } from '../common/mail-template';
 // import * as jwt_decode from "jwt-decode";
 
 @Injectable()
@@ -72,18 +73,17 @@ export class UsersService {
   }
 
    async updateUserPassword(body, userId): Promise<any> {
-    
-    const users: any = await this.usersRepository.findOne({ where: { id: userId } });
-    // let currentPass =  await bcrypt.hash(body.currentPassword, 10)
+       
+    let users: any = await this.usersRepository.findOne({ where: { id: userId } });
   
     let isPasswordValid = await bcrypt.compare(body.currentPassword, users.password)
-    
-    // let bodyUpdate = {
-      users.password = await bcrypt.hash(body.currentPassword, 10)
-    // }
-
+  
     if (isPasswordValid) {
-      await this.usersRepository.updateUser(users, { where: { id: userId } });
+      let newPass = {
+        password: await bcrypt.hash(body.newPassword, 10)
+      }
+      
+      await this.usersRepository.updateUser(newPass, { where: { id: userId } });
       return { 
         success: true, 
         data: 'Password successfully updated!' 
@@ -95,6 +95,66 @@ export class UsersService {
         };
     }
 
+  }
+
+  async resetUserPassword(body, userId):Promise<any> {
+
+    let user: any = await this.usersRepository.findOne({ where: { id: userId } });
+    if(user) {
+      let newPass = {
+        password: await bcrypt.hash(body.password, 10)
+      }
+      await this.usersRepository.updateUser(newPass, { where: { id: userId } });
+      return { 
+        success: true, 
+        data: 'Password successfully updated!' 
+      };
+    } else {
+      return { 
+        success: false, 
+        data: 'Data is not correct, try again!' 
+      };
+    }
+  }
+
+  async resetPassword(email): Promise<any> {
+    
+    const user = await this.usersRepository.findOne({ where: { email: email } });
+    
+    if (user) {
+
+      const nodemailer = require('nodemailer');
+      let transporter = nodemailer.createTransport({
+        host: 'smtp.gmail.com',
+        port: 465,
+        secure: true, // true for 465, false for other ports
+        auth: {
+            user: 'stanislavdiubko@gmail.com', // generated ethereal user
+            pass: 'stanislav92' // generated ethereal password
+        }
+      });
+
+    const hashId = await jwtr.sign({id: user.id, name: user.name}, jwtConstants.secret)
+
+      // send mail with defined transport object
+      let info = await transporter.sendMail({
+          from: '"Stas Diubko 👻" <stanislavdiubko@gmail.com>', // sender address
+          to: email, // list of receivers
+          subject: 'Reset password', // Subject line
+          text: 'Reset password', // plain text body
+          html: templateEmail(hashId)
+          
+      });
+
+      console.log('Message sent: %s', info.messageId);
+      
+    } else {
+      console.log('not ok');
+      
+    }
+    return {
+      success: true
+    }
   }
 
   async getAvatar(avatarId): Promise<GetAvatarModel> {

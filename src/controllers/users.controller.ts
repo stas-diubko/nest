@@ -32,6 +32,11 @@ export class UsersController {
     updateUserPassword(@Req() user: Request) {
         return this.usersService.updateUserPassword(user.body, user.params.id);
     }
+    
+    @Put('/reset-user-password/:id')
+    resetUserPassword(@Req() user: Request){
+        return this.usersService.resetUserPassword(user.body, user.params.id);
+    }
 
     @UseGuards(RolesGuard)
     @Delete('/:id')
@@ -43,6 +48,11 @@ export class UsersController {
     @Post('/register')
     register(@Req() user: Request): any {
         return this.usersService.register(user.body);
+    }
+
+    @Put('/reset-password')
+    resetPassword(@Req() body: Request) {
+        return this.usersService.resetPassword(body.body.email);
     }
 
 }
