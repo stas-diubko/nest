@@ -5,7 +5,6 @@ import * as jwtr from "jwt-then";
 import { UserBaseModel, GetAvatarModel, UpdateUserModel, GetUsersModel } from '../models/user.model';
 import { jwtConstants } from '../secrets/jwtSecretKey';
 import { UsersRepository, UserRolesRepository } from '../repositories';
-import { templateEmail } from '../common/mail-template';
 // import * as jwt_decode from "jwt-decode";
 
 @Injectable()
@@ -95,66 +94,6 @@ export class UsersService {
         };
     }
 
-  }
-
-  async resetUserPassword(body, userId):Promise<any> {
-
-    let user: any = await this.usersRepository.findOne({ where: { id: userId } });
-    if(user) {
-      let newPass = {
-        password: await bcrypt.hash(body.password, 10)
-      }
-      await this.usersRepository.updateUser(newPass, { where: { id: userId } });
-      return { 
-        success: true, 
-        data: 'Password successfully updated!' 
-      };
-    } else {
-      return { 
-        success: false, 
-        data: 'Data is not correct, try again!' 
-      };
-    }
-  }
-
-  async resetPassword(email): Promise<any> {
-    
-    const user = await this.usersRepository.findOne({ where: { email: email } });
-    
-    if (user) {
-
-      const nodemailer = require('nodemailer');
-      let transporter = nodemailer.createTransport({
-        host: 'smtp.gmail.com',
-        port: 465,
-        secure: true, // true for 465, false for other ports
-        auth: {
-            user: 'stanislavdiubko@gmail.com', // generated ethereal user
-            pass: 'stanislav92' // generated ethereal password
-        }
-      });
-
-    const hashId = await jwtr.sign({id: user.id, name: user.name}, jwtConstants.secret)
-
-      // send mail with defined transport object
-      let info = await transporter.sendMail({
-          from: '"Stas Diubko 👻" <stanislavdiubko@gmail.com>', // sender address
-          to: email, // list of receivers
-          subject: 'Reset password', // Subject line
-          text: 'Reset password', // plain text body
-          html: templateEmail(hashId)
-          
-      });
-
-      console.log('Message sent: %s', info.messageId);
-      
-    } else {
-      console.log('not ok');
-      
-    }
-    return {
-      success: true
-    }
   }
 
   async getAvatar(avatarId): Promise<GetAvatarModel> {

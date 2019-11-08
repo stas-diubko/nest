@@ -5,10 +5,13 @@ import { AuthGuard } from '@nestjs/passport';
 import { AuthService } from '../services/auth.service';
 import { Roles } from "../common/roles.decorator"
 import { RolesGuard } from '../common/role.guard';
+import { ApiImplicitBody, ApiImplicitParam, ApiBearerAuth } from '@nestjs/swagger';
+import { UserModel } from '../swager/register-model';
 
 @Controller('users')
 export class UsersController {
     constructor(private readonly usersService: UsersService, private readonly authService: AuthService) { }
+    
     @UseGuards(AuthGuard('jwt'))
     @Put()
     findAll(@Req() user: Request): any {
@@ -16,7 +19,9 @@ export class UsersController {
     }
 
     @UseGuards(AuthGuard('jwt'))
+    @ApiBearerAuth()
     @Get('/avatar/:id')
+    @ApiImplicitParam({name: 'id', required: true})
     getAvatar(@Req() req: Request) {
         return this.usersService.getAvatar(req.params.id);
     }
@@ -32,11 +37,6 @@ export class UsersController {
     updateUserPassword(@Req() user: Request) {
         return this.usersService.updateUserPassword(user.body, user.params.id);
     }
-    
-    @Put('/reset-user-password/:id')
-    resetUserPassword(@Req() user: Request){
-        return this.usersService.resetUserPassword(user.body, user.params.id);
-    }
 
     @UseGuards(RolesGuard)
     @Delete('/:id')
@@ -46,13 +46,9 @@ export class UsersController {
     }
 
     @Post('/register')
+    @ApiImplicitBody({name:'registerUser', type: UserModel})
     register(@Req() user: Request): any {
         return this.usersService.register(user.body);
-    }
-
-    @Put('/reset-password')
-    resetPassword(@Req() body: Request) {
-        return this.usersService.resetPassword(body.body.email);
     }
 
 }
