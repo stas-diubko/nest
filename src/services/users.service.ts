@@ -5,6 +5,8 @@ import * as jwtr from "jwt-then";
 import { UserBaseModel, GetAvatarModel, UpdateUserModel, GetUsersModel } from '../models/user.model';
 import { jwtConstants } from '../secrets/jwtSecretKey';
 import { UsersRepository, UserRolesRepository } from '../repositories';
+import { HttpException } from "@nestjs/common"
+
 // import * as jwt_decode from "jwt-decode";
 
 @Injectable()
@@ -144,7 +146,7 @@ export class UsersService {
           success: true,  
           message: "User successfully created" 
         };
-      } 
+      } else throw new HttpException('User already exists', 401);
   }
    
 }

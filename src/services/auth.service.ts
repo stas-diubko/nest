@@ -36,12 +36,14 @@ export class AuthService{
       const emailRegExpr = new RegExp(/^\w+([\.-]?\w+)*@(((([a-z0-9]{2,})|([a-z0-9][-][a-z0-9]+))[\.][a-z0-9])|([a-z0-9]+[-]?))+[a-z0-9]+\.([a-z]{2}|(com|net|org|edu|int|mil|gov|arpa|biz|aero|name|coop|info|pro|museum))$/i);
 
       if (!emailRegExpr.test(email)) {
-          errorObj.logErrorEmail = 'Error: Email is not valid!';
-          
+          // errorObj.logErrorEmail = 'Error: Email is not valid!';
+          throw new HttpException('Error: Email is not valid!', 400);
       } else {++stateValid}
 
       if (password.length < 3) {
-          errorObj.logErrorPassword = 'Error: Password must be more than four characters';
+          // errorObj.logErrorPassword = 'Error: Password must be more than four characters';
+          throw new HttpException('Error: Password must be more than four characters!', 400);
+
       } else {++stateValid}
 
       return {

@@ -15,8 +15,8 @@ export class AuthController {
     @UseGuards(AuthGuard('local'))
     @Post()
     @ApiImplicitBody({name:'loginUser', type: UserLoginModel})
-    async login(@Req() user: Request){
-        return this.authService.login(user);
+    async login(@Req() req: Request){
+        return this.authService.login(req);
     }
 
     @Put('/reset-password')
