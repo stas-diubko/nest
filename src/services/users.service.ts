@@ -115,7 +115,8 @@ export class UsersService {
             success: true,  
             message: 'Delete is done' 
           };
-        } 
+        }
+         else throw new HttpException('User not found', 404);
   }
 
   async register(userBody): Promise<UserBaseModel> {
