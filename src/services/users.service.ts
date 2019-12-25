@@ -126,7 +126,7 @@ export class UsersService {
       name: userBody.name,
       password: await bcrypt.hash(userBody.password, 10),
       email: userBody.email,
-      image: userBody.imgChange 
+      image: userBody.image
     };
               
       const matchUser: any = await this.usersRepository.findOne({ where: { email: newUser.email } })

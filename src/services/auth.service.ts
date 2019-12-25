@@ -140,12 +140,12 @@ export class AuthService{
       console.log('Message sent: %s', info.messageId);
       return {
         success: true,
-        message: 'Password reset link sent to your email!'
+        data: 'Password reset link sent to your email!'
       }
     } else {
       return {
         success: false,
-        message: 'User not found!'
+        data: 'User not found!'
       }
       
     }
