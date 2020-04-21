@@ -7,8 +7,6 @@ import { jwtConstants } from '../secrets/jwtSecretKey';
 import { UsersRepository, UserRolesRepository } from '../repositories';
 import { HttpException } from "@nestjs/common"
 
-// import * as jwt_decode from "jwt-decode";
-
 @Injectable()
 export class UsersService {
   constructor(

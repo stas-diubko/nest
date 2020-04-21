@@ -10,7 +10,7 @@ import { AddBooksViewModel } from '../models/book.model';
 export class BooksController {
     constructor(private readonly booksService: BooksService) { }
     
-    @UseGuards(RolesGuard)
+    @UseGuards(RolesGuard, AuthGuard('jwt'))
     @Put()
     @Roles('admin')
     findAllForAdmin(@Req() books: Request): any {
@@ -27,21 +27,21 @@ export class BooksController {
         return this.booksService.findOne(book.params.id);
     }
 
-    @UseGuards(RolesGuard)
+    @UseGuards(RolesGuard, AuthGuard('jwt'))
     @Put('/:id')
     @Roles('admin')
     updateBook(@Req() book: Request){
         return this.booksService.updateBook(book.body, book.params.id);
     }
 
-    @UseGuards(RolesGuard)
+    @UseGuards(RolesGuard, AuthGuard('jwt'))
     @Delete('/:id')
     @Roles('admin')
     deleteBook(@Req() book: Request): any {
         return this.booksService.deleteBook(book.params.id);
     }
 
-    @UseGuards(RolesGuard)
+    @UseGuards(RolesGuard, AuthGuard('jwt'))
     @Post()
     @Roles('admin')
     addBook(@Body() book:AddBooksViewModel) {

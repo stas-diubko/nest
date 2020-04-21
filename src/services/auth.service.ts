@@ -8,7 +8,7 @@ import * as jwtr from "jwt-then";
 import { jwtConstants } from '../secrets/jwtSecretKey';
 import { AuthRepository, UsersRepository } from '../repositories';
 import { templateEmail } from '../common/mail-template';
-
+import * as jwt_decode from "jwt-decode";
 @Injectable()
 
 export class AuthService{
@@ -84,8 +84,40 @@ export class AuthService{
       role: permissions
     };
 
-    const token = await jwtr.sign(userLogin, jwtConstants.secret)
-     return { success: true, data: token };
+    const token = await jwtr.sign(userLogin, jwtConstants.secret, { expiresIn: '1d' });
+    const refreshToken = await jwtr.sign({id: user.user.id, email: user.user.email,}, jwtConstants.secret, { expiresIn: '2d' });
+     return { success: true, token: token, refreshToken };
+  }
+
+  async refreshToken(body): Promise<any> {
+    let now = Date.now();
+    let decoded = jwt_decode(body.refreshToken);
+
+    let decodedExpireTimeToString = decoded.exp.toString() + '000';
+    let decodedExpireTimeToNumber = Number(decodedExpireTimeToString);
+    
+    if (now > decodedExpireTimeToNumber) {
+      throw new HttpException('Token expired', 401);
+    } else {
+      const user: any = await this.authRepository.getUserById(decoded.id);
+            
+      if (!user) {
+        throw new HttpException('User not found', 404);
+      }
+      let permissions: string;
+      permissions = await this.authRepository.findAll(user.dataValues.id);
+      
+      const userLogin = {
+        id: user.dataValues.id,
+        name: user.dataValues.name,
+        email: user.dataValues.email,
+        role: permissions
+      };
+
+      const token = await jwtr.sign(userLogin, jwtConstants.secret, { expiresIn: '1d' });
+      const refreshToken = await jwtr.sign({id: user.dataValues.id, email: user.dataValues.email,}, jwtConstants.secret, { expiresIn: '2d' });
+      return { success: true, token: token, refreshToken };
+    }
   }
 
   async resetUserPassword(body, userId):Promise<any> {

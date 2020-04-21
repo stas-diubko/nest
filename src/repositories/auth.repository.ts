@@ -11,6 +11,11 @@ export class AuthRepository {
         return user
     }
 
+    async getUserById(userId: number) {
+        const user = await this.AUTH_REPOSITORY.findOne<User>({ where: { id: userId } });
+        return user;
+    }
+
     async findAll(userId){
         const per = await this.AUTH_REPOSITORY.findAll<User>({
             where: { id: userId },

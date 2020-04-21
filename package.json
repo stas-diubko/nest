@@ -28,6 +28,7 @@
     "bcrypt": "^3.0.6",
     "dotenv": "^8.1.0",
     "helmet": "^3.21.0",
+    "jwt-decode": "^2.2.0",
     "jwt-then": "^1.0.1",
     "logzio-nodejs": "^1.0.7",
     "morgan": "^1.9.1",

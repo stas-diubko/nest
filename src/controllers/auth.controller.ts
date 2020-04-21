@@ -19,11 +19,17 @@ export class AuthController {
         return this.authService.login(req);
     }
 
+    @Post('/refreshToken')
+    async refreshToken(@Req() req: Request) {
+        return this.authService.refreshToken(req.body);
+    }
+
     @Put('/reset-password')
     resetPassword(@Req() body: Request) {
         return this.authService.resetPassword(body.body.email);
     }
 
+    @UseGuards(AuthGuard('jwt'))
     @Put('/reset-user-password/:id')
     resetUserPassword(@Req() user: Request){
         return this.authService.resetUserPassword(user.body, user.params.id);

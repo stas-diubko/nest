@@ -38,7 +38,7 @@ export class UsersController {
         return this.usersService.updateUserPassword(user.body, user.params.id);
     }
 
-    @UseGuards(RolesGuard)
+    @UseGuards(RolesGuard, AuthGuard('jwt'))
     @Delete('/:id')
     @Roles('admin')
     delete(@Req() user: Request): any {
