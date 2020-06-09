@@ -20,6 +20,14 @@ export class UsersController {
 
     @UseGuards(AuthGuard('jwt'))
     @ApiBearerAuth()
+    @Get('/:id')
+    @ApiImplicitParam({name: 'id', required: true})
+    getUser(@Req() req: Request) {
+        return this.usersService.findOne(req.params.id);
+    }
+
+    @UseGuards(AuthGuard('jwt'))
+    @ApiBearerAuth()
     @Get('/avatar/:id')
     @ApiImplicitParam({name: 'id', required: true})
     getAvatar(@Req() req: Request) {

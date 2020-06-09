@@ -1,4 +1,5 @@
-import { Table, Column, Model, DataType } from 'sequelize-typescript';
+import { Table, Column, Model, DataType, HasMany } from 'sequelize-typescript';
+import { Cart } from './cart.entity';
 
 @Table
 export class Book extends Model<Book> {
@@ -26,4 +27,7 @@ export class Book extends Model<Book> {
 
   @Column
   bookImage: string;
+
+  @HasMany(() => Cart)
+  bookId
 }

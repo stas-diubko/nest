@@ -8,5 +8,6 @@ export interface GetAllProductsModel {
 }
 
 export interface AddCartViewModel {
-    body: object;
+    userId: string;
+    bookId: string;
 }

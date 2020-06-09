@@ -1,4 +1,6 @@
-import { Table, Column, Model, DataType, ForeignKey, BelongsToMany, BelongsTo } from 'sequelize-typescript';
+import { Table, Column, Model, DataType, ForeignKey, BelongsToMany, BelongsTo, HasMany, DefaultScope } from 'sequelize-typescript';
+import { Book } from './books.entity';
+import { Cart } from './cart.entity';
 
 @Table
 export class Users_role extends Model<Users_role> {
@@ -11,6 +13,10 @@ export class Users_role extends Model<Users_role> {
   @Column
   roles_id: number;
 }
+
+@DefaultScope(() => ({
+  attributes: { exclude: ['password'] }
+}))
 
 @Table
 export class User extends Model<User> {
@@ -37,6 +43,9 @@ export class User extends Model<User> {
 
   @BelongsToMany(() => Role, () => Users_role)
   roleId: Users_role[];
+
+  @HasMany(() => Cart)
+  userId
 }
 
 @Table

@@ -96,6 +96,12 @@ export class UsersService {
 
   }
 
+  async findOne(userId): Promise<any> {
+    const user = await this.usersRepository.findOne({ where: { id: userId } });
+    if (user) return user;
+      else throw new HttpException('User not found', 404);
+  } 
+
   async getAvatar(avatarId): Promise<GetAvatarModel> {
     const users: any = await this.usersRepository.findOne({ attributes: ['image'], where: { id: avatarId } });
     const avatar = users.dataValues.image

@@ -12,7 +12,7 @@ export class CartController {
     
     @UseGuards(AuthGuard('jwt'))
     @Post()
-    addBook(@Body() product:AddCartViewModel) {
+    addBook(@Body() product: AddCartViewModel) {
         return this.cartService.addProduct(product);
     }
 
@@ -28,11 +28,11 @@ export class CartController {
         return this.cartService.getCartLength(req.params.id);
     }
 
-    @UseGuards(AuthGuard('jwt'))
-    @Put('/:id')
-    updateProduct(@Body() product: AddCartViewModel, @Req() req: Request) {
-        return this.cartService.updateProduct(product, req.params.id)
-    }
+    // @UseGuards(AuthGuard('jwt'))
+    // @Put('/:id')
+    // updateProduct(@Body() product: AddCartViewModel, @Req() req: Request) {
+    //     return this.cartService.updateProduct(product, req.params.id)
+    // }
 
     @UseGuards(AuthGuard('jwt'))
     @Delete('/:id/:bookId')
